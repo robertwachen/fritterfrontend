@@ -7,7 +7,8 @@
       <header>
         <h2>New to Fritter?</h2>
       </header>
-      <RegisterForm />
+      <CreateAnonAccount />
+      <CreateVerifiedAccount />
     </section>
     <section>
       <header>
@@ -19,14 +20,16 @@
 </template>
 
 <script>
-import RegisterForm from '@/components/Login/RegisterForm.vue';
+import CreateVerifiedAccount from '@/components/Login/CreateVerifiedAccount.vue';
+import CreateAnonAccount from '@/components/Login/CreateAnonAccount.vue';
 import LoginForm from '@/components/Login/LoginForm.vue';
 
 export default {
   name: 'LoginPage',
   components: {
-    RegisterForm,
-    LoginForm
+    CreateVerifiedAccount,
+    CreateAnonAccount,
+    LoginForm,
   }
 };
 </script>

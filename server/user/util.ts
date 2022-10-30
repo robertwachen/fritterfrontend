@@ -4,9 +4,22 @@ import type {User} from './model';
 
 // Update this if you add a property to the User type!
 type UserResponse = {
+
+  // Note that password is not included because it should not be returned to the frontend
   _id: string;
   username: string;
   dateJoined: string;
+  accountType: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  birthday?: string;
+  emailConfirmed?: boolean;
+  phoneConfirmed?: boolean;
+  birthdayConfirmed?: boolean;
+  verifiedClubs?: string[];
+  pendingClubs?: string[];
 };
 
 /**
@@ -35,7 +48,10 @@ const constructUserResponse = (user: HydratedDocument<User>): UserResponse => {
   return {
     ...userCopy,
     _id: userCopy._id.toString(),
-    dateJoined: formatDate(user.dateJoined)
+    dateJoined: formatDate(user.dateJoined),
+    birthday: user.birthday ? formatDate(user.birthday) : undefined,
+    verifiedClubs: user.verifiedClubs.map(club => club.toString()),
+    pendingClubs: user.pendingClubs.map(club => club.toString())
   };
 };
 

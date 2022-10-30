@@ -19,12 +19,35 @@
           @input="field.value = $event.target.value"
         />
         <input
-          v-else
+          v-else-if="!field.type"
           :type="field.id === 'password' ? 'password' : 'text'"
           :name="field.id"
           :value="field.value"
           @input="field.value = $event.target.value"
         >
+        <input
+          v-else-if="field.type === 'date'"
+          :type="field.type"
+          :name="field.id"
+          :value="field.value"
+          @input="field.value = $event.target.value"
+        >
+        <select
+          v-else-if="field.type === 'dropdown'"
+          :name="field.id"
+          :value="field.value"
+          @input="field.value = $event.target.value"
+        >
+          <option
+            v-for="option in field.options"
+            :key="option"
+            :value="option"
+          >
+            {{ option }}
+          </option>
+        </select>
+        
+        
       </div>
     </article>
     <article v-else>

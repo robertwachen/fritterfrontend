@@ -7,25 +7,34 @@
   </div>
 </template>
 
-<script>
-import NavBar from '@/components/common/NavBar.vue';
+<script lang="ts">
+  import NavBar from '@/components/common/NavBar.vue';
 
-export default {
-  name: 'App',
-  components: {NavBar},
-  beforeCreate() {
-    // Sync stored username to current session
-    fetch('/api/users/session', {
-      credentials: 'same-origin' // Sends express-session credentials with request
-    }).then(res => res.json()).then(res => {
-      const user = res.user;
-      this.$store.commit('setUsername', user ? user.username : null);
-    });
+  export default {
+    name: 'App',
+    components: {NavBar},
+    beforeCreate() {
+      // Sync stored username to current session
+      fetch('/api/users/session', {
+        credentials: 'same-origin' // Sends express-session credentials with request
+      }).then(res => res.json()).then(res => {
+        const user = res.user;
 
-    // Clear alerts on page refresh
-    this.$store.state.alerts = {};
-  }
-};
+        this.$store.commit('setUsername', user ? user.username : null);
+        this.$store.commit('setAccountType', user ? user.accountType : null);
+        this.$store.commit('setFirstName', user ? user.firstName : null);
+        this.$store.commit('setLastName', user ? user.lastName : null);
+        this.$store.commit('setEmail', user ? user.email : null);
+        this.$store.commit('setPhone', user ? user.phone : null);
+        this.$store.commit('setBirthday', user ? user.birthday : null);
+        this.$store.commit('setVerifiedClubs', user ? user.verifiedClubs : null);
+        this.$store.commit('setPendingClubs', user ? user.pendingClubs : null);
+      });
+
+      // Clear alerts on page refresh
+      this.$store.state.alerts = {};
+    }
+  };
 </script>
 
 <style>

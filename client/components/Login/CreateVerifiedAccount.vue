@@ -4,7 +4,7 @@
 import BlockForm from '@/components/common/BlockForm.vue';
 
 export default {
-  name: 'RegisterForm',
+  name: 'CreateVerifiedAccount',
   mixins: [BlockForm],
   data() {
     return {
@@ -14,9 +14,15 @@ export default {
       setUsername: true,
       fields: [
         {id: 'username', label: 'Username', value: ''},
-        {id: 'password', label: 'Password', value: ''}
+        {id: 'password', label: 'Password', value: ''},
+        {id: 'accountType', label: 'Account Type', value: '', type: 'dropdown', options: ['verified']},
+        {id: 'firstName', label: 'First Name', value: ''},
+        {id: 'lastName', label: 'Last Name', value: ''},
+        {id: 'email', label: 'Email', value: ''},
+        {id: 'phone', label: 'Phone', value: ''},
+        {id: 'birthday', label: 'Birthday', value: '', type: 'date'}
       ],
-      title: 'Create account',
+      title: 'Create verified account',
       callback: () => {
         const message = 'Successfully created an account!';
         this.$router.push({name: 'Home'});

@@ -12,6 +12,23 @@ export type User = {
   username: string;
   password: string;
   dateJoined: Date;
+
+  // Either 'verified' or 'anon'
+  accountType: string;
+
+
+  // Only applicable if accountType === 'verified'
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  birthday: Date;
+
+  emailConfirmed: boolean;
+  phoneConfirmed: boolean;
+
+  verifiedClubs: Array<Object>;
+  pendingClubs: Array<Object>;
 };
 
 // Mongoose schema definition for interfacing with a MongoDB table
@@ -32,8 +49,51 @@ const UserSchema = new Schema({
   dateJoined: {
     type: Date,
     required: true
+  },
+  accountType: {
+    type: String,
+    required: true
+  },
+
+  // These are required: false because they are only applicable if accountType === 'verified'
+  firstName: {
+    type: String,
+    required: false
+  },
+  lastName: {
+    type: String,
+    required: false
+  },
+  email: {
+    type: String,
+    required: false
+  },
+  phone: {
+    type: String,
+    required: false
+  },
+  birthday: {
+    type: Date,
+    required: false
+  },
+  emailConfirmed: {
+    type: Boolean,
+    required: false
+  },
+  phoneConfirmed: {
+    type: Boolean,
+    required: false
+  },
+  verifiedClubs: {
+    type: Array,
+    required: false
+  },
+  pendingClubs: {
+    type: Array,
+    required: false
   }
 });
 
 const UserModel = model<User>('User', UserSchema);
+
 export default UserModel;

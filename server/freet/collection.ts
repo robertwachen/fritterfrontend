@@ -2,6 +2,7 @@ import type {HydratedDocument, Types} from 'mongoose';
 import type {Freet} from './model';
 import FreetModel from './model';
 import UserCollection from '../user/collection';
+import ClubCollection from '../club/collection';
 
 /**
  * This files contains a class that has the functionality to explore freets
@@ -19,13 +20,16 @@ class FreetCollection {
    * @param {string} content - The id of the content of the freet
    * @return {Promise<HydratedDocument<Freet>>} - The newly created freet
    */
-  static async addOne(authorId: Types.ObjectId | string, content: string): Promise<HydratedDocument<Freet>> {
+  static async addOne(authorId: Types.ObjectId | string, content: string, clubName: string): Promise<HydratedDocument<Freet>> {  
+    const club = await ClubCollection.findOneByClubName(clubName);
+
     const date = new Date();
     const freet = new FreetModel({
       authorId,
       dateCreated: date,
       content,
-      dateModified: date
+      dateModified: date,
+      clubId: club._id || ''
     });
     await freet.save(); // Saves freet to MongoDB
     return freet.populate('authorId');
@@ -60,6 +64,11 @@ class FreetCollection {
   static async findAllByUsername(username: string): Promise<Array<HydratedDocument<Freet>>> {
     const author = await UserCollection.findOneByUsername(username);
     return FreetModel.find({authorId: author._id}).sort({dateModified: -1}).populate('authorId');
+  }
+
+  static async findAllByClubName(clubName: string): Promise<Array<HydratedDocument<Freet>>> {
+    const club = await ClubCollection.findOneByClubName(clubName);
+    return FreetModel.find({clubId: club._id}).sort({dateModified: -1}).populate('authorId');
   }
 
   /**

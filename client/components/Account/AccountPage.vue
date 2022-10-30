@@ -7,8 +7,25 @@
       <header>
         <h2>Account settings for @{{ $store.state.username }}</h2>
       </header>
-      <ChangeUsernameForm />
-      <ChangePasswordForm />
+      <section
+        v-if="$store.state.accountType === 'verified'"
+      >
+        <header>
+          <h4>Verified account</h4>
+          <p>To change profile data besides clubs, please email team@fritter.com.</p>
+        </header>
+        <AccountDataTable />
+      </section>
+      <section
+        v-if="$store.state.accountType === 'anonymous'"
+      >
+        <header>
+          <h4>Anonymous Account</h4>
+        </header>
+        <ChangeUsernameForm />
+        <ChangePasswordForm />
+      </section>
+      
     </section>
     <section>
       <header>
@@ -25,6 +42,7 @@ import ChangeUsernameForm from '@/components/Account/ChangeUsernameForm.vue';
 import ChangePasswordForm from '@/components/Account/ChangePasswordForm.vue';
 import DeleteAccountForm from '@/components/Account/DeleteAccountForm.vue';
 import LogoutForm from '@/components/Account/LogoutForm.vue';
+import AccountDataTable from '@/components/Account/AccountDataTable.vue';
 
 export default {
   name: 'AccountPage',
@@ -32,6 +50,7 @@ export default {
     ChangeUsernameForm,
     ChangePasswordForm,
     DeleteAccountForm,
+    AccountDataTable,
     LogoutForm
   }
 };

@@ -9,14 +9,12 @@ const router = express.Router();
 
 /**
  * Get the signed in user
- * TODO: may need better route and documentation
- * (so students don't accidentally delete this when copying over)
  *
  * @name GET /api/users/session
  *
  * @return - currently logged in user, or null if not logged in
  */
-router.get(
+ router.get(
   '/session',
   [],
   async (req: Request, res: Response) => {
@@ -48,7 +46,7 @@ router.post(
     userValidator.isUserLoggedOut,
     userValidator.isValidUsername,
     userValidator.isValidPassword,
-    userValidator.isAccountExists
+    userValidator.isAccountExists,
   ],
   async (req: Request, res: Response) => {
     const user = await UserCollection.findOneByUsernameAndPassword(
@@ -103,10 +101,12 @@ router.post(
     userValidator.isUserLoggedOut,
     userValidator.isValidUsername,
     userValidator.isUsernameNotAlreadyInUse,
-    userValidator.isValidPassword
+    userValidator.isValidPassword,
+    userValidator.isAccountType,
+    userValidator.hasVerifiedUserProps
   ],
   async (req: Request, res: Response) => {
-    const user = await UserCollection.addOne(req.body.username, req.body.password);
+    const user = await UserCollection.addOne(req.body.username, req.body.password, req.body.accountType, req.body.firstName, req.body.lastName, req.body.email, req.body.phone, req.body.birthday);
     req.session.userId = user._id.toString();
     res.status(201).json({
       message: `Your account was created successfully. You have been logged in as ${user.username}`,
@@ -133,7 +133,8 @@ router.patch(
     userValidator.isUserLoggedIn,
     userValidator.isValidUsername,
     userValidator.isUsernameNotAlreadyInUse,
-    userValidator.isValidPassword
+    userValidator.isValidPassword,
+    userValidator.hasVerifiedUserProps
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
