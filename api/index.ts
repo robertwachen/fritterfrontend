@@ -10,8 +10,8 @@ import * as userValidator from '../server/user/middleware';
 import {userRouter} from '../server/user/router';
 import {freetRouter} from '../server/freet/router';
 import MongoStore from 'connect-mongo';
-import { clubRouter } from 'server/club/router';
-import { discourseRouter } from 'server/discourse/router';
+import { clubRouter } from '../server/club/router';
+import { discourseRouter } from '../server/discourse/router';
 
 // Load environmental variables
 dotenv.config({});
