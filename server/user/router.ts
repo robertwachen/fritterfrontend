@@ -2,6 +2,7 @@ import type {Request, Response} from 'express';
 import express from 'express';
 import FreetCollection from '../freet/collection';
 import UserCollection from './collection';
+import * as clubValidator from '../club/middleware';
 import * as userValidator from '../user/middleware';
 import * as util from './util';
 
@@ -134,7 +135,7 @@ router.patch(
     userValidator.isValidUsername,
     userValidator.isUsernameNotAlreadyInUse,
     userValidator.isValidPassword,
-    userValidator.hasVerifiedUserProps
+    userValidator.hasVerifiedUserProps,
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn

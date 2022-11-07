@@ -11,10 +11,6 @@ export default {
   },
   methods: {
     async submit() {
-      const currentFilters = this.$store.state.filters;
-
-      console.log('currentFilters', currentFilters);
-
       const newFilter = {
         name: 'author',
         value: this.value,
@@ -24,35 +20,19 @@ export default {
       console.log(newFilter)
       console.log('****')
 
-      
-      // iterate through all the curretnt filters to build a query string and add the new filter to the query string
-      let queryString = '';
-      if (currentFilters?.length) {
-        queryString = '?';
-        currentFilters.forEach((filter, index) => {
-          if (index) {
-            queryString += '&';
-          }
-          queryString += `${filter.name}=${filter.value}`;
-        });
-      }
-      else {
-        queryString = '?';
-        queryString += `${newFilter.name}=${newFilter.value}`;
-      }
+      const queryString = this.$store.state.filters.toString()
 
-      console.log(queryString)
-
-      const url = queryString ? `/api/freets${queryString}` : '/api/freets';
+      const url = queryString ? `/api/freets?${queryString}` : '/api/freets';
       console.log('query', url)
       try {
-        // const r = await fetch(url);
-        // const res = await r.json();
-        // if (!r.ok) {
-        //   throw new Error(res.error);
-        // }
+        const r = await fetch(url);
+        const res = await r.json();
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
         this.$store.commit('updateFilter', newFilter);
-        // this.$store.commit('updateFreets', res);
+        this.$store.commit('updateFreets', res);
+        this.$store.commit('refreshFreets');
       } catch (e) {
         if (this.value === this.$store.state.filter) {
           // This section triggers if you filter to a user but they

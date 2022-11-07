@@ -240,10 +240,21 @@ const isAuthorExists = async (req: Request, res: Response, next: NextFunction) =
 const isUserInClub = async (req: Request, res: Response, next: NextFunction) => {
   const user = await UserCollection.findOneByUserId(req.session.userId);
 
-  // REMOVE THIS WHEN DONE FILTERING BY CLUB NAME 'Test'
-  user.verifiedClubs = [...user.verifiedClubs, 'Test']
+  console.log(req.body, req.query, req.params);
 
   const clubName = req.body.clubName || req.query.clubName;
+
+  if (!clubName) {
+    res.status(400).json({
+      error: 'Club name must be provided.'
+    });
+    return;
+  }
+
+  if (clubName === 'Main') {
+    next();
+    return;
+  }
 
   if (user.verifiedClubs.includes(clubName)) 
   {

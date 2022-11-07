@@ -94,7 +94,9 @@ const store = new Vuex.Store({
        * @param verifiedClubs - new verifiedClubs to set
        * 
        */
+
       state.verifiedClubs = verifiedClubs;
+      console.log('setVerifiedClubs', state.verifiedClubs);
     },
     setPendingClubs(state, pendingClubs) {
       /**
@@ -110,50 +112,23 @@ const store = new Vuex.Store({
        * @param newFilter = {name: 'XXX', value: 'YYY'} -> ?name=value
        */
 
-      if (state.filters === null) {
+      try {
+        console.log(state.filters.entries())
+      } catch (e) {
         state.filters = new URLSearchParams();
+        console.log('filters was null')
       }
 
       if (newFilter) {
-        state.filters.set(newFilter.name, newFilter.value);
-        // console.log(state.filters.toString());
+        if ((newFilter.value === '') || (newFilter.name === 'clubName' && newFilter.value === 'Main')) 
+        {
+          state.filters.delete(newFilter.name);
+        } else 
+        {
+          state.filters.set(newFilter.name, newFilter.value);
+          console.log(state.filters.toString());
+        }
       }
-      
-
-      
-      // state.filters = null;
-      // console.log(state.filters);
-      // return;
-
-
-      // console.log('Current filters: ', state.filters);
-
-      // console.log('New filter: ', newFilter);
-
-      // if (!state.filters)
-      // {
-      //   state.filters = [];
-      // }
-
-      // let alreadyHadFilter = false;
-      // for (const filter in state.filters)
-      // {
-      //   if (filter.name === newFilter.name)
-      //   {
-      //     console.log('2222');
-      //     state.filters[filter.name].value = newFilter.value;
-      //     alreadyHadFilter = true;
-      //     return;
-      //   }
-      // }
-
-      // if (!alreadyHadFilter)
-      // {
-      //   console.log('3333', newFilter);
-      //   state.filters.push(newFilter);
-      // }
-
-      // console.log('Updated filter complete: ', state.filters);
     },
     updateFreets(state, freets) {
       /**
@@ -167,18 +142,8 @@ const store = new Vuex.Store({
        * Request the server for the currently available freets.
        */
 
-      // check if state.filters contains a filter for author
-      console.log('HEREE!!!')
-      let author = '';
-      for (const filter in state.filters)
-      {
-        if (filter.name === 'author')
-        {
-          author = filter.value;
-        }
-      }
-
-      const url = (author != '') ? `/api/users/${author}/freets` : '/api/freets';
+      const queryString = state.filters.toString()
+      const url = queryString ? `/api/freets?${queryString}` : '/api/freets';
       const res = await fetch(url).then(async r => r.json());
       state.freets = res;
     },

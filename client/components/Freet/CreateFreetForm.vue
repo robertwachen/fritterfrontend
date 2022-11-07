@@ -8,11 +8,12 @@ export default {
   mixins: [BlockForm],
   data() {
     return {
-      url: '/api/freets',
+      url: `/api/freets`,
       method: 'POST',
       hasBody: true,
       fields: [
-        {id: 'content', label: 'Content', value: ''}
+        {id: 'content', label: 'Content', value: ''},
+        {id: 'clubName', label: 'Club', value: this.$store.state.feed}
       ],
       title: 'Create a freet',
       refreshFreets: true,
@@ -22,6 +23,12 @@ export default {
         setTimeout(() => this.$delete(this.alerts, message), 3000);
       }
     };
+  },
+  // Make sure clubName changes with vuex
+  watch: {
+    '$store.state.feed': function() {
+      this.fields[1].value = this.$store.state.feed;
+    }
   }
 };
 </script>

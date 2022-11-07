@@ -2,23 +2,17 @@
     <!-- <NavBar /> -->
     <nav>
         <router-link class="navLink" 
-        to="/"
+        to="?"
+        :style="getColor('Main')"
         @click.native="updateFeed('Main')"
         >
         Main
         </router-link>
-        <!-- <router-link
-            class="navLink"
-            v-for="club in $store.state.clubs"
-            :key="club.id"
-            :to="'/club/' + club.id"
-        >
-        {{ club.name }}
-        </router-link> -->
         <router-link
             class="navLink"
             v-for="club in clubs"
             :to="'?club=' + club"
+            :style="getColor(club)"
             @click.native="updateFeed(club)"
         >
         {{ club }}
@@ -31,13 +25,23 @@ import BlockForm from '@/components/common/BlockForm.vue';
 import NavBar from '@/components/common/NavBar.vue';
 import store from '@/store';
 
-const clubs = ['test', 'test2', 'test3'];
+const clubs = store.state.verifiedClubs;
 const updateFeed = (club) => {
     const newFilter = {
         name: 'clubName',
         value: club
     };
     store.commit('updateFilter', newFilter);
+    store.commit('setFeed', club);
+    store.commit('refreshFreets');
+}
+
+const getColor = (club) => {
+    console.log('club', club)
+    if (club === store.state.feed) {
+        return 'color: #00f';
+    }
+    return 'color: #000';
 }
 
 export default {
@@ -46,7 +50,8 @@ export default {
     data() {
         return {
         clubs,
-        updateFeed
+        updateFeed,
+        getColor
         };
     },
 };
@@ -57,7 +62,7 @@ nav {
     padding: 1vw 2vw;
     background-color: #ccc;
     display: flex;
-    justify-content: space-between;
+    justify-content: left;
     align-items: center;
     position: relative;
 }
@@ -70,5 +75,6 @@ nav {
     text-decoration: none;
     color: black;
 }
+
 
 </style>

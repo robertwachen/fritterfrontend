@@ -3,6 +3,7 @@ import type {Freet} from './model';
 import FreetModel from './model';
 import UserCollection from '../user/collection';
 import ClubCollection from '../club/collection';
+import * as util from './util';
 
 /**
  * This files contains a class that has the functionality to explore freets
@@ -21,7 +22,12 @@ class FreetCollection {
    * @return {Promise<HydratedDocument<Freet>>} - The newly created freet
    */
   static async addOne(authorId: Types.ObjectId | string, content: string, clubName: string): Promise<HydratedDocument<Freet>> {  
-    const club = await ClubCollection.findOneByClubName(clubName);
+    let club = null;
+    console.log(clubName, 'clubName in addone freet');
+    if (clubName != 'Main') 
+    {
+      club = await ClubCollection.findOneByClubName(clubName);
+    }
 
     const date = new Date();
     const freet = new FreetModel({
@@ -29,7 +35,7 @@ class FreetCollection {
       dateCreated: date,
       content,
       dateModified: date,
-      clubId: club._id || ''
+      clubId: club?._id || ''
     });
     await freet.save(); // Saves freet to MongoDB
     return freet.populate('authorId');

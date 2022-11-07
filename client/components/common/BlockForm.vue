@@ -11,41 +11,50 @@
         v-for="field in fields"
         :key="field.id"
       >
-        <label :for="field.id">{{ field.label }}:</label>
-        <textarea
-          v-if="field.id === 'content'"
-          :name="field.id"
-          :value="field.value"
-          @input="field.value = $event.target.value"
-        />
-        <input
-          v-else-if="!field.type"
-          :type="field.id === 'password' ? 'password' : 'text'"
-          :name="field.id"
-          :value="field.value"
-          @input="field.value = $event.target.value"
-        >
-        <input
-          v-else-if="field.type === 'date'"
-          :type="field.type"
-          :name="field.id"
-          :value="field.value"
-          @input="field.value = $event.target.value"
-        >
-        <select
-          v-else-if="field.type === 'dropdown'"
-          :name="field.id"
-          :value="field.value"
-          @input="field.value = $event.target.value"
-        >
-          <option
-            v-for="option in field.options"
-            :key="option"
-            :value="option"
+        <!-- <div v-if="field.id != 'clubName'"> -->
+          <label 
+            v-if="field.id != 'clubName'"
+            :for="field.id"
           >
-            {{ option }}
-          </option>
-        </select>
+            {{ field.label }}:
+          </label>
+          <div v-if="field.id === 'clubName'"></div>
+          <textarea
+            v-else-if="field.id === 'content'"
+            :name="field.id"
+            :value="field.value"
+            @input="field.value = $event.target.value"
+          />
+          <input
+            v-else-if="!field.type"
+            :type="field.id === 'password' ? 'password' : 'text'"
+            :name="field.id"
+            :value="field.value"
+            @input="field.value = $event.target.value"
+          >
+          <input
+            v-else-if="field.type === 'date'"
+            :type="field.type"
+            :name="field.id"
+            :value="field.value"
+            @input="field.value = $event.target.value"
+          >
+          <select
+            v-else-if="field.type === 'dropdown'"
+            :name="field.id"
+            :value="field.value"
+            @input="field.value = $event.target.value"
+          >
+            <option
+              v-for="option in field.options"
+              :key="option"
+              :value="option"
+            >
+              {{ option }}
+            </option>
+          </select>
+        <!-- </div> -->
+        
         
         
       </div>
@@ -84,6 +93,7 @@ export default {
       hasBody: false, // Whether or not form request has a body
       setUsername: false, // Whether or not stored username should be updated after form submission
       refreshFreets: false, // Whether or not stored freets should be updated after form submission
+      setVerifiedClubs: false, // Whether or not stored verifiedClubs should be updated after form submission
       alerts: {}, // Displays success/error messages encountered during form submission
       callback: null // Function to run after successful form submission
     };
@@ -120,6 +130,12 @@ export default {
           const text = await r.text();
           const res = text ? JSON.parse(text) : {user: null};
           this.$store.commit('setUsername', res.user ? res.user.username : null);
+        }
+
+        if (this.setVerifiedClubs) {
+          const text = await r.text();
+          const res = text ? JSON.parse(text) : {verifiedClubs: []};
+          this.$store.commit('setVerifiedClubs', res.user.verifiedClubs ? res.user.verifiedClubs : null);
         }
 
         if (this.refreshFreets) {

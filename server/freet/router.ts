@@ -30,6 +30,9 @@ router.get(
   '/',
   async (req: Request, res: Response, next: NextFunction) => {
 
+    console.log('******')
+    console.log(req.query)
+
     // THIS CASE HAS NO FILTERS
 
     // Check if any filters are applied
@@ -40,7 +43,8 @@ router.get(
 
     const allFreets = await FreetCollection.findAll();
     const response = allFreets.map(util.constructFreetResponse);
-    res.status(200).json(response);
+    const publicFreets = response.filter(freet => freet.clubId === '' || freet.clubId === null);
+    res.status(200).json(publicFreets);
   },
   [
     userValidator.isAuthorExists
@@ -116,6 +120,7 @@ router.post(
     freetValidator.isValidFreetContent,
   ],
   async (req: Request, res: Response) => {
+    console.log(req.body);
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
     const freet = await FreetCollection.addOne(userId, req.body.content, req.body.clubName);
 

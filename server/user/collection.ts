@@ -1,4 +1,5 @@
 import type {HydratedDocument, Types} from 'mongoose';
+import ClubCollection from '../club/collection';
 import type {User} from './model';
 import UserModel from './model';
 
@@ -70,6 +71,8 @@ class UserCollection {
    * @return {Promise<HydratedDocument<User>>} - The updated user
    */
   static async updateOne(userId: Types.ObjectId | string, userDetails: any): Promise<HydratedDocument<User>> {
+    console.log('upadting user', userDetails);
+    
     const user = await UserModel.findOne({_id: userId});
     if (userDetails.password) {
       user.password = userDetails.password as string;
@@ -77,6 +80,25 @@ class UserCollection {
 
     if (userDetails.username) {
       user.username = userDetails.username as string;
+    }
+
+    // adding middleware here to check if the club is real
+    if (userDetails.verifiedClubs) {
+      console.log('updating verified clubs', userDetails.verifiedClubs);
+      const club = await ClubCollection.findOneByClubName(userDetails.verifiedClubs);
+      console.log('club', club);
+
+      if (!club) {
+        console.log('club does not exist');
+      }
+      else if (user.accountType === 'anonymous' && club.privacy != 'public') {
+        console.log('anonymous accounts can only join public clubs');
+      }
+      else {
+        if (!user.verifiedClubs.includes(userDetails.verifiedClubs)) {
+          user.verifiedClubs.push(userDetails.verifiedClubs);
+        }
+      }
     }
 
     await user.save();

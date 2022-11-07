@@ -5,6 +5,7 @@
     <section v-if="$store.state.username">
       <header>
         <h2>Welcome @{{ $store.state.username }}!</h2>
+        <p>Now viewing: {{$store.state.feed}}</p>
       </header>
       <ClubNavBar />
       <CreateFreetForm />
@@ -27,14 +28,15 @@
         <div class="left">
           <h2>
             <span v-if="$store.state.feed == 'Main'">
-              Viewing all freets
+              Viewing all public freets
             </span>
             <span v-else>
               Viewing freets from {{ $store.state.feed }}
             </span>
-            <span v-if="$store.state.filter">
-              by @{{ $store.state.filter }}
-            </span>
+            <!-- <span v-if="$store.state.filters.get('author') != null">
+              by @{{ $store.state.filters.get('author') }}
+              in {{ $store.state.feed }}
+            </span> -->
           </h2>
         </div>
         <div class="right">
