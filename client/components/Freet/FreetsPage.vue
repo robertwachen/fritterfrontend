@@ -5,7 +5,6 @@
     <section v-if="$store.state.username">
       <header>
         <h2>Welcome @{{ $store.state.username }}!</h2>
-        <p>Now viewing: {{$store.state.feed}}</p>
       </header>
       <ClubNavBar />
       <CreateFreetForm />
