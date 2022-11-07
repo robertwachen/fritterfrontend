@@ -29,6 +29,7 @@
         this.$store.commit('setBirthday', user ? user.birthday : null);
         this.$store.commit('setVerifiedClubs', user ? user.verifiedClubs : null);
         this.$store.commit('setPendingClubs', user ? user.pendingClubs : null);
+        this.$store.commit('setFeed', user ? 'Main' : null);
       });
 
       // Clear alerts on page refresh

@@ -9,7 +9,7 @@ Vue.use(Vuex);
  */
 const store = new Vuex.Store({
   state: {
-    filter: null, // Username to filter shown freets by (null = show all)
+    filters: null,
     freets: [], // All freets created in the app
     username: null, // Username of the logged in user
     accountType: null, // Account type of the logged in user. Either 'Verified' or 'Anonymous'
@@ -20,7 +20,8 @@ const store = new Vuex.Store({
     birthday: null, // Birthday of the logged in user
     verifiedClubs: [], // Array of verified clubs the user is a member of
     pendingClubs: [], // Array of pending clubs the user is a member of
-    alerts: {} // global success/error messages encountered during submissions to non-visible forms
+    alerts: {}, // global success/error messages encountered during submissions to non-visible forms
+    feed: null, // The feed to display on the home page
   },
   mutations: {
     alert(state, payload) {
@@ -103,12 +104,56 @@ const store = new Vuex.Store({
        */
       state.pendingClubs = pendingClubs;
     },
-    updateFilter(state, filter) {
+    updateFilter(state, newFilter) {
       /**
-       * Update the stored freets filter to the specified one.
-       * @param filter - Username of the user to fitler freets by
+       * Accepts one filter at a time and updates the filters object.
+       * @param newFilter = {name: 'XXX', value: 'YYY'} -> ?name=value
        */
-      state.filter = filter;
+
+      if (state.filters === null) {
+        state.filters = new URLSearchParams();
+      }
+
+      if (newFilter) {
+        state.filters.set(newFilter.name, newFilter.value);
+        // console.log(state.filters.toString());
+      }
+      
+
+      
+      // state.filters = null;
+      // console.log(state.filters);
+      // return;
+
+
+      // console.log('Current filters: ', state.filters);
+
+      // console.log('New filter: ', newFilter);
+
+      // if (!state.filters)
+      // {
+      //   state.filters = [];
+      // }
+
+      // let alreadyHadFilter = false;
+      // for (const filter in state.filters)
+      // {
+      //   if (filter.name === newFilter.name)
+      //   {
+      //     console.log('2222');
+      //     state.filters[filter.name].value = newFilter.value;
+      //     alreadyHadFilter = true;
+      //     return;
+      //   }
+      // }
+
+      // if (!alreadyHadFilter)
+      // {
+      //   console.log('3333', newFilter);
+      //   state.filters.push(newFilter);
+      // }
+
+      // console.log('Updated filter complete: ', state.filters);
     },
     updateFreets(state, freets) {
       /**
@@ -121,9 +166,28 @@ const store = new Vuex.Store({
       /**
        * Request the server for the currently available freets.
        */
-      const url = state.filter ? `/api/users/${state.filter}/freets` : '/api/freets';
+
+      // check if state.filters contains a filter for author
+      console.log('HEREE!!!')
+      let author = '';
+      for (const filter in state.filters)
+      {
+        if (filter.name === 'author')
+        {
+          author = filter.value;
+        }
+      }
+
+      const url = (author != '') ? `/api/users/${author}/freets` : '/api/freets';
       const res = await fetch(url).then(async r => r.json());
       state.freets = res;
+    },
+    setFeed(state, feed) {
+      /**
+       * Update the stored feed to the provided feed.
+       * @param feed - Feed to display on the home page
+       */
+      state.feed = feed;
     }
   },
   // Store data across page refreshes, only discard on browser close

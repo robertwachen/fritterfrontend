@@ -19,26 +19,21 @@ const router = express.Router();
 /**
  * Get freets by author.
  *
- * @name GET /api/freets?authorId=id
+ * @name GET /api/freets?author=handle&clubName=clubName
  *
- * @return {FreetResponse[]} - An array of freets created by user with id, authorId
- * @throws {400} - If authorId is not given
- * @throws {404} - If no user has given authorId
+ * @return {FreetResponse[]} - An array of freets created by user with name, name
+ * @throws {400} - If name is not given
+ * @throws {404} - If no user has given name
  *
  */
 router.get(
   '/',
   async (req: Request, res: Response, next: NextFunction) => {
 
-    // Check if clubName query parameter was supplied
-    if (req.query.clubName !== undefined) {
-      next();
-      return;
-    }
+    // THIS CASE HAS NO FILTERS
 
-    // Check if authorId query parameter was supplied
-    if (req.query.author !== undefined) {
-      next();
+    // Check if any filters are applied
+    if (req.query.clubName !== undefined || req.query.author !== undefined) {
       next();
       return;
     }
@@ -48,23 +43,58 @@ router.get(
     res.status(200).json(response);
   },
   [
+    userValidator.isAuthorExists
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+
+    // THIS CASE HAS AN AUTHOR FILTER BUT NO CLUB FILTER
+
+    // Check if any filters are applied
+    if (req.query.clubName !== undefined) {
+      next();
+      return;
+    }
+
+    const authorFreets = await FreetCollection.findAllByUsername(req.query.author as string);
+    const response = authorFreets.map(util.constructFreetResponse);
+    res.status(200).json(response);
+  },
+  [
     userValidator.isUserLoggedIn,
     clubValidator.isExistingClubName,
     userValidator.isUserInClub
   ],
   async (req: Request, res: Response, next: NextFunction) => {
+
+    // THIS CASE HAS A CLUB FILTER BUT NO AUTHOR FILTER
+
+    // Check if authorId query parameter was supplied
+    if (req.query.author !== undefined) {
+      next();
+      return;
+    }
+
     const clubFreets = await FreetCollection.findAllByClubName(req.query.clubName as string);
     const response = clubFreets.map(util.constructFreetResponse);
     res.status(200).json(response);
   },
   [
-    userValidator.isAuthorExists
+    userValidator.isAuthorExists,
+    userValidator.isUserLoggedIn,
+    clubValidator.isExistingClubName,
+    userValidator.isUserInClub
   ],
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+
+    // THIS CASE HAS A CLUB FILTER AND A AUTHOR FILTER
+
+    const clubFreets = await FreetCollection.findAllByClubName(req.query.clubName as string);
     const authorFreets = await FreetCollection.findAllByUsername(req.query.author as string);
-    const response = authorFreets.map(util.constructFreetResponse);
+
+    const clubAuthorFreets = clubFreets.filter((freet) => authorFreets.includes(freet));
+    const response = clubAuthorFreets.map(util.constructFreetResponse);
     res.status(200).json(response);
-  }
+  },
 );
 
 /**

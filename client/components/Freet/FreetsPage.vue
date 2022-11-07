@@ -4,8 +4,9 @@
   <main>
     <section v-if="$store.state.username">
       <header>
-        <h2>Welcome @{{ $store.state.username }}</h2>
+        <h2>Welcome @{{ $store.state.username }}!</h2>
       </header>
+      <ClubNavBar />
       <CreateFreetForm />
     </section>
     <section v-else>
@@ -25,7 +26,12 @@
       <header>
         <div class="left">
           <h2>
-            Viewing all freets
+            <span v-if="$store.state.feed == 'Main'">
+              Viewing all freets
+            </span>
+            <span v-else>
+              Viewing freets from {{ $store.state.feed }}
+            </span>
             <span v-if="$store.state.filter">
               by @{{ $store.state.filter }}
             </span>
@@ -44,7 +50,7 @@
         v-if="$store.state.freets.length"
       >
         <FreetComponent
-          v-for="freet in $store.state.freets"
+          v-for="freet in freets"
           :key="freet.id"
           :freet="freet"
         />
@@ -62,13 +68,20 @@
 import FreetComponent from '@/components/Freet/FreetComponent.vue';
 import CreateFreetForm from '@/components/Freet/CreateFreetForm.vue';
 import GetFreetsForm from '@/components/Freet/GetFreetsForm.vue';
+import ClubNavBar from '@/components/Club/ClubNavBar.vue';
 
 export default {
   name: 'FreetPage',
-  components: {FreetComponent, GetFreetsForm, CreateFreetForm},
+  components: {FreetComponent, GetFreetsForm, CreateFreetForm, ClubNavBar},
   mounted() {
     this.$refs.getFreetsForm.submit();
-  }
+  },
+  computed: {
+    freets() {
+      const result = this.$store.state.freets;
+      return result;
+    },
+  },
 };
 </script>
 

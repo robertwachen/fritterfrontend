@@ -210,10 +210,13 @@ const isUserLoggedOut = (req: Request, res: Response, next: NextFunction) => {
  */
 const isAuthorExists = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.query.author) {
-    res.status(400).json({
-      error: 'Provided author username must be nonempty.'
-    });
+    next();
     return;
+    // Removing this check so double filtering works
+    // res.status(400).json({
+    //   error: 'Provided author username must be nonempty.'
+    // });
+    // return;
   }
 
   const user = await UserCollection.findOneByUsername(req.query.author as string);
